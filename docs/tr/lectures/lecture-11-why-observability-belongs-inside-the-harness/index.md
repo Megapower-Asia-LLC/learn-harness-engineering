@@ -32,9 +32,7 @@ flowchart LR
     Verdict --> Generator
 ```
 
-## Öğretim örneği
-
-> Öğretim örneği: senaryo ve sayılar açıklama için varsayılmıştır, yayımlanmış deney ölçümleri değildir.
+## Bu neden olur
 
 ### Gözlemlenebilirlik eksikliğinin gerçek maliyeti
 
@@ -46,7 +44,7 @@ Bir harness gözlemlenebilirlikten yoksun olduğunda dört tür sorun sistematik
 
 **Yeniden denemeler kör tahminlere dönüşür**: Ajan neden başarısız olduğunu bilmediğinde yeniden deneme yönü rastgeledir. Yanlış yönde tekrar tekrar deneyebilir — gerçek başarısızlık kök nedenini göz ardı ederken ilgisiz kod yollarını düzeltebilir. Her kör yeniden deneme token ve zamana mal olur.
 
-İlerleme ve doğrulama sonuçlarını sürümlenen dosyalara kaydedin; sonraki oturum durumu inceleyebilsin. Kaynak mekanizmayı anlatır, başlangıç süresinde yüzde azalma vermez. [Anthropic](https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents)
+**Oturum devir bilgi uçurumu**: Eksiksiz olmayan iş bir sonraki oturuma teslim edildiğinde, gözlemlenebilirlik eksikliği yeni oturumun sistem durumunu sıfırdan teşhis etmek zorunda olduğu anlamına gelir. Anthropic'in uzun süre çalışan ajan gözlemleri bu gereksiz tanının toplam oturum süresinin %30-50'sini tüketebileceğini gösteriyor.
 
 ### Gerçek bir Claude Code senaryosu
 
@@ -118,9 +116,7 @@ Her görev başlamadan önce üretici ve değerlendirici (aynı ajanın farklı 
 
 Her harness oturumu için bir iz, her görev için bir span ve her doğrulama adımı için alt span'lar oluşturun. Kilit bilgileri etiketlemek için standart öznitelikler kullanın. Bu şekilde gözlemlenebilirlik verisi standart araç zincirleriyle (Jaeger, Zipkin) entegre olur.
 
-## Öğretim örneği
-
-> Öğretim örneği: senaryo ve sayılar açıklama için varsayılmıştır, yayımlanmış deney ölçümleri değildir.
+## Gerçek dünya örneği
 
 "Karanlık mod desteği ekle" yürüten planlayıcı-üretici-değerlendirici iş akışı kullanan bir harness:
 
@@ -140,7 +136,7 @@ Her harness oturumu için bir iz, her görev için bir span ve her doğrulama ad
 - **Her iki gözlemlenebilirlik katmanı da gereklidir** — runtime sinyalleri "ne oldu"yu, süreç artefaktları "neden bu şekilde yapıldı"yı açıklar.
 - **Sprint sözleşmeleri hizalamayı öne çeker** — "üreticinin değerlendiricinin öngörülebilir nedenlerle hemen reddedeceği bir şey inşa etmesi"ni önler.
 - **Puanlama ölçütleri değerlendirmeyi tekrarlanabilir yapar** — farklı değerlendiriciler aynı çıktı için benzer puanlar üretir.
-- İlerleme ve doğrulama sonuçlarını sürümlenen dosyalara kaydedin; sonraki oturum durumu inceleyebilsin. Kaynak mekanizmayı anlatır, başlangıç süresinde yüzde azalma vermez.
+- **Gözlemlenebilirlik eksikliği oturum süresinin %30-50'sini gereksiz tanılara harcar.**
 
 ## Daha fazla okuma
 

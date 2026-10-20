@@ -9,26 +9,13 @@ Te consideras una persona con experiencia en el mundo de la IA: suscripción a C
 
 Tu primer instinto puede ser: "este modelo no es suficientemente bueno, toca actualizar". Espera. Antes de sacar la tarjeta, considera que quizá el problema no sea el modelo.
 
-Claude Sonnet 4.5 · 2025-09-29 · SWE-bench Verified
-
-| Score | Tasks | Trials | Scaffold |
-| --- | --- | --- | --- |
-| 77.2% | 500 | 10 | bash + string replacement |
-
-Los resultados de producción no aíslan una causa. Las puntuaciones corresponden al modelo, scaffold, conjunto de datos y evaluación indicados, no a toda tarea real. [Anthropic: methodology](https://www.anthropic.com/news/claude-sonnet-4-5)
+Veamos algunos números. A finales de 2025, los agentes de programación más fuertes en SWE-bench Verified logran aproximadamente 50-60%. Y eso en tareas cuidadosamente seleccionadas, con descripciones claras y tests existentes. Si lo llevas a tu entorno diario de desarrollo — requisitos vagos, sin tests existentes, reglas de negocio implícitas por todas partes — ese número solo baja.
 
 Pero detrás de estos números hay una verdad contraintuitiva.
 
 ## El mismo caballo, destinos distintos
 
-> Mismo modelo y prompt, pero distintos presupuestos de tiempo y coste. No es un experimento de igual presupuesto que aísle un componente. El juego funcionaba en lo esencial, pero conservaba errores. [Anthropic](https://www.anthropic.com/engineering/harness-design-long-running-apps)
-
-Mismo modelo y prompt, pero distintos presupuestos de tiempo y coste. No es un experimento de igual presupuesto que aísle un componente. El juego funcionaba en lo esencial, pero conservaba errores. [Anthropic](https://www.anthropic.com/engineering/harness-design-long-running-apps)
-
-| Opus 4.5 | Duration | USD |
-| --- | --- | --- |
-| Solo | 20 min | 9 |
-| Full harness | 6 h | 200 |
+Anthropic realizó un experimento controlado. Mismo prompt ("construye un creador de juegos retro 2D"), mismo modelo (Opus 4.5). Primera ejecución: sin apoyo, sin harness — 20 minutos, 9 dólares, las funciones centrales del juego no funcionaban. Segunda ejecución: harness completo, con arquitectura de tres agentes planner + generator + evaluator — 6 horas, 200 dólares, el juego era jugable.
 
 No cambiaron el modelo. Opus 4.5 seguía siendo Opus 4.5. Lo que cambió fue el equipo de monta.
 
@@ -52,7 +39,7 @@ Las tareas largas que cruzan sesiones son aún peores: los descubrimientos de la
 
 Con estos escenarios en mente, estos conceptos ya no son jerga:
 
-- Los resultados de producción no aíslan una causa. Las puntuaciones corresponden al modelo, scaffold, conjunto de datos y evaluación indicados, no a toda tarea real.
+- **Brecha de capacidad**: la distancia enorme entre el rendimiento del modelo en benchmarks y su rendimiento en tareas reales. Un 50-60% en SWE-bench Verified significa que casi la mitad de los issues reales no se resuelven.
 - **Harness**: todo lo que está fuera del modelo: instrucciones, herramientas, entorno, gestión de estado y feedback de verificación. Si no son pesos del modelo, es harness. Es el "equipo de monta" del que hablamos.
 - **Fallo inducido por harness**: el modelo tiene capacidad suficiente, pero el entorno de ejecución tiene defectos estructurales. El experimento controlado de Anthropic ya lo demostró.
 - **Brecha de verificación**: la diferencia entre la confianza del agente en su salida y la corrección real. El agente dice "terminé" cuando no terminó. Es el modo de fallo más común.
@@ -85,19 +72,17 @@ Completion criteria:
 
 ## El experimento del millón de líneas
 
-Los resultados de producción no aíslan una causa. Las puntuaciones corresponden al modelo, scaffold, conjunto de datos y evaluación indicados, no a toda tarea real. [OpenAI: 2026-02-11](https://openai.com/index/harness-engineering/)
+OpenAI realizó en 2025 un experimento agresivo: usar Codex para construir un producto interno completo desde un repositorio git vacío. Cinco meses después, el repositorio tenía alrededor de un millón de líneas de código: lógica de aplicación, infraestructura, tooling, documentación y herramientas internas de desarrollo, todo generado por agentes. Tres ingenieros dirigieron Codex, abriendo y fusionando unas 1.500 PRs, con una media de 3,5 PRs por persona al día.
 
-Los resultados de producción no aíslan una causa. Las puntuaciones corresponden al modelo, scaffold, conjunto de datos y evaluación indicados, no a toda tarea real.
+La restricción clave: **los humanos nunca escriben código directamente.** No era un truco; estaba diseñado para obligar al equipo a descubrir qué cambia cuando el trabajo principal del ingeniero deja de ser escribir código y pasa a ser diseñar entornos, expresar intención y construir bucles de feedback.
 
 El progreso inicial fue más lento de lo esperado. No porque Codex no pudiera, sino porque el entorno no estaba completo: al agente le faltaban herramientas, abstracciones y estructuras internas para avanzar hacia objetivos de alto nivel. El trabajo de los ingenieros se convirtió en descomponer metas grandes en bloques pequeños — diseño, código, revisión, test — dejar que el agente los ensamblara y luego usar esos bloques para desbloquear tareas más complejas. Cuando algo fallaba, la solución casi nunca era "intenta más fuerte"; era "qué capacidad le falta al agente, y cómo la hacemos comprensible y ejecutable".
 
-Los resultados de producción no aíslan una causa. Las puntuaciones corresponden al modelo, scaffold, conjunto de datos y evaluación indicados, no a toda tarea real.
+Este experimento demuestra directamente la tesis central de la lección: **el mismo modelo produce resultados fundamentalmente distintos en un entorno desnudo y en uno con harness completo.** El modelo no cambió. El entorno sí.
 
 > Fuente: [OpenAI: Harness engineering: leveraging Codex in an agent-first world](https://openai.com/index/harness-engineering/)
 
-## Ejemplo didáctico
-
-> Ejemplo didáctico: el escenario y sus cifras son supuestos para explicar el mecanismo, no mediciones de un experimento publicado.
+## Un ejemplo más cotidiano
 
 Un equipo usó Claude Sonnet para añadir un nuevo endpoint a una aplicación web Python mediana (FastAPI + PostgreSQL + Redis, unas 15.000 líneas).
 
@@ -122,8 +107,6 @@ No cambiaron el modelo. Cambiaron el harness.
 - [HumanLayer: Skill Issue — Harness Engineering for Coding Agents](https://www.humanlayer.dev/blog/skill-issue-harness-engineering-for-coding-agents)
 - [SWE-bench Leaderboard](https://www.swebench.com/)
 - [Thoughtworks Technology Radar: Harness Engineering](https://www.thoughtworks.com/radar)
-
-- [Anthropic: Sonnet 4.5 SWE-bench methodology, 2025-09-29](https://www.anthropic.com/news/claude-sonnet-4-5)
 
 ## Ejercicios
 

@@ -32,9 +32,7 @@ flowchart LR
     Verdict --> Generator
 ```
 
-## Ejemplo didáctico
-
-> Ejemplo didáctico: el escenario y sus cifras son supuestos para explicar el mecanismo, no mediciones de un experimento publicado.
+## Por qué ocurre
 
 ### El coste real de no tener observabilidad
 
@@ -46,7 +44,7 @@ Cuando un harness no tiene observabilidad, aparecen sistemáticamente cuatro tip
 
 **Los reintentos se vuelven conjeturas ciegas**: cuando el agente no sabe por qué falló algo, la dirección del reintento es aleatoria. Puede corregir rutas de código irrelevantes mientras ignora la causa raíz. Cada reintento ciego cuesta tokens y tiempo.
 
-Registra progreso y verificación en archivos versionados para que la siguiente sesión inspeccione el estado. La fuente explica el mecanismo sin cuantificar el ahorro de arranque. [Anthropic](https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents)
+**Acantilado de información en el handoff**: cuando se entrega trabajo incompleto a la siguiente sesión, la falta de observabilidad obliga a diagnosticar el estado del sistema desde cero. Las observaciones de Anthropic muestran que ese diagnóstico redundante puede consumir 30-50% del tiempo total de sesión.
 
 ### Un escenario realista con Claude Code
 
@@ -118,9 +116,7 @@ Convierte "¿está bien o no?" en puntuación cuantificable:
 
 Crea una traza para cada sesión de harness, un span para cada tarea y sub-spans para cada paso de verificación. Usa atributos estándar para anotar información clave. Así, los datos de observabilidad se integran con herramientas como Jaeger o Zipkin.
 
-## Ejemplo didáctico
-
-> Ejemplo didáctico: el escenario y sus cifras son supuestos para explicar el mecanismo, no mediciones de un experimento publicado.
+## Caso real
 
 Un harness con workflow planner-generator-evaluator ejecuta "añadir soporte de dark mode":
 
@@ -140,7 +136,7 @@ Mejora de eficiencia 3x, calidad más estable y evaluaciones reproducibles.
 - **Ambas capas de observabilidad son esenciales**: las señales de runtime explican "qué pasó"; los artefactos de proceso explican "por qué se hizo así".
 - **Los sprint contracts alinean por adelantado**, evitando que el generator construya algo que el evaluator rechaza por razones previsibles.
 - **Las rúbricas hacen reproducible la evaluación**, de modo que distintos evaluadores produzcan puntuaciones parecidas.
-- Registra progreso y verificación en archivos versionados para que la siguiente sesión inspeccione el estado. La fuente explica el mecanismo sin cuantificar el ahorro de arranque.
+- **La falta de observabilidad desperdicia 30-50% del tiempo de sesión en diagnóstico redundante.**
 
 ## Lecturas adicionales
 
